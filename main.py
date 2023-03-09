@@ -35,6 +35,16 @@ class SineSampler(Sampler):
 		return ampiltude
 
 
+class TriSampler(Sampler):
+	def sample(self, time: float) -> float:
+		period = 1 / self.frequency
+		current_phase = (time % period) / period
+		if current_phase < 0.5: # we are less than halfway through the period
+			return (current_phase - 0.25) * 4 * self.volume
+		else:
+			return (current_phase - 0.75) * -4 * self.volume
+
+
 class NoiseSampler(Sampler):
 	def __init__(self, frequency: float = 261.6, volume: float = 1, mode: bool = False):
 		super().__init__(frequency, volume)
@@ -49,7 +59,7 @@ class NoiseSampler(Sampler):
 			new_val = (self.bits & 0b1) ^ ((self.bits >> (6 if self.mode else 1)) & 0b1)
 			self.bits = (self.bits & ((1 << 14) - 1)) | (new_val << 14)
 			self.bits >>= 1
-		return -1 if self.bits & 0b1 == 0 else 1
+		return (-1 if self.bits & 0b1 == 0 else 1) * self.volume
 
 
 def main():
