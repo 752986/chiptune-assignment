@@ -104,6 +104,8 @@ For all channels, remember that each cycle should last `1 / self.frequency` seco
 
 **Pulse:** 
 
+![](images/pulse_cycle.png)
+
 This channel jumps directly from -1 to +1 every cycle, so if it starts at +1, it should jump to -1 partway through the cycle, and then back to +1 at the start of the next cycle. You should add a variable to your class to store the duty cycle variable, which is a percentage from 0 to 1. The duty cycle controls when in the cycle the value changes from +1 to -1. At a duty cycle of 0.5, the wave spends an equal amount of time at -1 and +1, whereas at a duty cycle of 0.25, the wave spends 25% of the time at +1 and 75% of the time at -1 each cycle.
 
 **Triangle:**
