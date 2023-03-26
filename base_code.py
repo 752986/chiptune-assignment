@@ -27,20 +27,24 @@ class SineSampler(Sampler):
 		return ampiltude
 
 
+# write your own `Sampler` class here!
+
+
 def main():
 	sampler = SineSampler(261.6) # change this line to use your own sampler!
 
 	# you shoudn't need to touch anything below here
+	data = bytes(
+			int(
+				sampler.sample(i / SAMPLE_RATE) * 127 * VOLUME + 127
+			) for i in range(int(SAMPLE_RATE * LENGTH))
+		) # process and write the samples
+
 	with wave.open("out.wav", "wb") as file: # open the file with write access
 		file.setframerate(SAMPLE_RATE)
 		file.setnchannels(1) # only one channel for simplicity
 		file.setsampwidth(1) # the 2A03 only has 4 bits per sample, but the smallest we can do is one byte
 
-		data = bytes(
-			int(
-				sampler.sample(i / SAMPLE_RATE) * 127 * VOLUME + 127
-			) for i in range(int(SAMPLE_RATE * LENGTH))
-		) # process and write the samples
 		file.writeframes(data)
 
 if __name__ == "__main__":

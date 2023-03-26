@@ -37,6 +37,8 @@ Generating audio mathematically from scratch is called *synthesis*, and is the b
 
 # 3. The Ricoh 2A03 Chip
 
+![](images/combined.png)
+
 The NES used a chip called the 2A03, which has multiple jobs on the console, including audio synthesis. It has 5 audio channels:
 
 - Two **pulse** channels, which can each produce a *square wave* at various *duty cycles*. A square wave jumps directly from -1 to +1 amplitude (and back again) each cycle. The duty cycle controls what percent of the cycle is spent at -1 vs +1. 
@@ -56,8 +58,6 @@ The NES used a chip called the 2A03, which has multiple jobs on the console, inc
 	The sample channel was mostly used for small sound effects or instruments, such as more realistic drums or basslines. The use of this was somewhat limited, since audio data took up a lot of space on the 40 kB game cartriges.
 
 You can see a demonstration of these channels [here](https://www.youtube.com/watch?v=gKXGDuKrCfA).
-
-![](images/nes_channels.jpg)
 
 
 # (*Summary of Background Info*)
@@ -100,8 +100,6 @@ Pick one of the three synthesizer channels from the 2A03 chip (pulse, triangle, 
 
 For all channels, remember that each cycle should last `1 / self.frequency` seconds, and that the output of `sample` should be multiplied by `self.volume`.
 
-> ***TODO:*** describe how each channel works
-
 **Pulse:** 
 
 ![](images/pulse_cycle.png)
@@ -110,11 +108,15 @@ This channel jumps directly from -1 to +1 every cycle, so if it starts at +1, it
 
 **Triangle:**
 
+![](images/tri.png)
+
 This channel is fairly simple; it varies in a straight line from +1 to -1 and then back again over the course of a cycle. 
 
 **Noise:**
 
-The noise channel is probably the most complicated one. It creates static noise, which is just a sequence of random numbers. It uses a linear-feedback shift register, which is a simple way of using bitwise math to generate those random numbers. 
+![](images/noise.png)
+
+The noise channel is probably the most complicated one. It creates static noise, which is just a sequence of random numbers. If you want, you can just generate those using the `random` library. However, for a more NES-like sound, we'll use a linear-feedback shift register, which is a simple way of using bitwise math to generate those random numbers. 
 
 Start by making a variable on your class to store the register. It doesn't really matter what value it starts with, as long as it's an `int`. To get the next value in the sequence: xor the two right-most bits together, and put the result into the fifteenth bit (from the right) of the register. Then, right-shift entire register by one bit, and use the right-most bit as the new value.
 
@@ -139,7 +141,7 @@ When you are finished, you can try the following:
 
 Here are a few handy formulas to help with the bitwise math needed for the noise channel:
 
-*For the following section, `a` and `b` are integers that the bits are being operated on, and `n` is an integer designating the number of bits to shift.*
+*For the following section, `a` and `b` are integers containing the bits that are being operated on, and `n` is an integer designating the number of bits to shift.*
 
 |Name|Syntax|
 |----|--------|
@@ -157,6 +159,10 @@ Here are a few handy formulas to help with the bitwise math needed for the noise
 **Get the `n` right-most bits:** `a & (1 << n) - 1`
 
 **Set the `n`th bit from the right to `b`** (make sure that `b` is only 0 or 1): `(a & (1 << n) - 1) | (b << n)`
+
+## Interactive audio with pygame:
+
+If you want to play sounds in real time, you can use `pygame.mixer`'s [`Sound`](https://www.pygame.org/docs/ref/mixer.html#pygame.mixer.Sound) type. Instead of writing the data to a file (lines 43 to 48; "`with wave.open`" to "`file.writeframes(data)`"), you can construct a `Sound` object using the `data` buffer, and then call its `play` method. This means you can generate sounds on the fly based on the user's input, and play it back instantly.
 
 ## Further reading:
 
